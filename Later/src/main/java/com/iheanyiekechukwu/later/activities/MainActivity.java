@@ -1,9 +1,13 @@
 package com.iheanyiekechukwu.later.activities;
 
+//import android.R;
+
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.LayoutInflater;
@@ -11,10 +15,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Toast;
 
-;import com.iheanyiekechukwu.later.fragments.NavigationDrawerFragment;
+import com.fortysevendeg.swipelistview.SwipeListView;
 import com.iheanyiekechukwu.later.R;
+import com.iheanyiekechukwu.later.adapters.SwipeMessageAdapter;
+import com.iheanyiekechukwu.later.fragments.NavigationDrawerFragment;
+import com.iheanyiekechukwu.later.helpers.Constants;
+import com.iheanyiekechukwu.later.models.MessageModel;
+
+import java.util.ArrayList;
+
+;
 
 public class MainActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -23,6 +35,8 @@ public class MainActivity extends Activity
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
+    private SwipeListView mListView;
+    private Context context;
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -37,6 +51,8 @@ public class MainActivity extends Activity
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
+
+        this.context = getBaseContext();
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -61,9 +77,11 @@ public class MainActivity extends Activity
                 break;
             case 2:
                 mTitle = getString(R.string.title_section2);
+                mTitle = "Deleted Messages";
                 break;
             case 3:
                 mTitle = getString(R.string.title_section3);
+                mTitle = "Sent Messages";
                 break;
         }
     }
@@ -97,8 +115,25 @@ public class MainActivity extends Activity
         switch (item.getItemId()) {
             case R.id.action_settings:
                 return true;
+
+            case R.id.action_compose:
+
+                startComposeActivity();
+                Toast.makeText(this, "Clicked Compose!", Toast.LENGTH_SHORT).show();
+                return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void startComposeActivity() {
+        /**
+         * Method for creating a new ComposeActivity.
+         *
+         */
+
+        //Intent intent = new Intent(this, ComposeActivity.class);
+        Intent intent = new Intent(this, AlternateActivity.class);
+        startActivity(intent);
     }
 
     /**
@@ -110,6 +145,7 @@ public class MainActivity extends Activity
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private Context context;
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -119,6 +155,7 @@ public class MainActivity extends Activity
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+//            args.putString()
             fragment.setArguments(args);
             return fragment;
         }
@@ -130,8 +167,41 @@ public class MainActivity extends Activity
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
+            //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
+
+            this.context = getActivity().getBaseContext();
+
+
+            ArrayList<MessageModel> testModelList = new ArrayList<MessageModel>();
+
+            MessageModel test1 = new MessageModel(Constants.MESSAGE_TYPE.MESSAGE, "Testing Recipient", "Hey, this is my test message." +
+                    " Pretty cool, huh?", "Tomorrow at 8:00PM");
+
+            MessageModel test2 = new MessageModel(Constants.MESSAGE_TYPE.MESSAGE, "Testing Recipient", "Hey, this is my test message." +
+                    " Pretty cool, huh?", "Tomorrow at 8:00PM");
+
+            MessageModel test3 = new MessageModel(Constants.MESSAGE_TYPE.FACEBOOK, "Testing Recipient", "Hey, this is my test message." +
+                    " Pretty cool, huh?", "Tomorrow at 8:00PM");
+
+            MessageModel test4 = new MessageModel(Constants.MESSAGE_TYPE.TWITTER, "Testing Recipient", "Just testing of a Twitter post.", "Tomorrow at 8:00 PM");
+
+            testModelList.add(test1);
+            testModelList.add(test4);
+            testModelList.add(test3);
+
+            MessageModel[] testArray = {test1, test4, test3};
+
+            SwipeListView listView = (SwipeListView) rootView.findViewById(R.id.messageListView);
+
+
+            SwipeMessageAdapter testMessageAdapter = new SwipeMessageAdapter(this.context);
+
+
+            testMessageAdapter.addAll(testModelList);
+
+            listView.setAdapter(testMessageAdapter);
+            //swipeView.setAdapter(MessageAdapter);
+
             return rootView;
         }
 

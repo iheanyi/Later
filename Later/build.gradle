@@ -1,11 +1,14 @@
 buildscript {
     repositories {
         mavenCentral()
+
+        maven {
+            url 'https://raw.github.com/ark/ark/master/releases/'
+        }
     }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.6.+'
-    }
+
 }
+
 apply plugin: 'android'
 
 repositories {
@@ -13,8 +16,8 @@ repositories {
 }
 
 android {
-    compileSdkVersion 19
-    buildToolsVersion "19.0.0"
+    compileSdkVersion 17
+    buildToolsVersion '17'
 
     defaultConfig {
         minSdkVersion 14
@@ -22,6 +25,10 @@ android {
     }
 }
 
+
 dependencies {
 	compile 'com.android.support:support-v4:+'
+	compile 'com.android.support:support-v13:+'
+    compile project(':libraries:swipelistview')
+
 }

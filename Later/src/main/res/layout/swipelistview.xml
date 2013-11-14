@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:swipe="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <LinearLayout
+        android:id="@+id/back"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:orientation="horizontal"
+        android:tag="back"
+        android:background="#e5e5e5"
+        android:layout_gravity="left|center_vertical">
+
+        <RelativeLayout
+            android:layout_height="fill_parent"
+            android:layout_width="fill_parent"
+            android:paddingLeft="8dp"
+            android:layout_gravity="left|center_vertical">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Move to Queue"
+                android:layout_weight="1"
+                android:id="@+id/button1"
+                android:layout_alignParentLeft="true"
+                android:background="@android:color/transparent"
+                android:layout_gravity="left|center_vertical"
+                android:src="@drawable/ic_action_sms"/>
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_alignLeft="@+id/button1"
+                android:layout_alignRight="@+id/button1"
+                android:layout_below="@+id/button1"
+                android:text="Send Now"
+                android:textSize="8sp"/>
+
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Edit"
+                android:layout_toRightOf="@id/button1"
+                android:paddingLeft="8dp"
+                android:layout_alignParentTop="@id/button1"
+                android:id="@+id/button2"
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_action_edit"
+                android:layout_gravity="left|center_vertical"
+                />
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_alignLeft="@+id/button2"
+                android:layout_alignRight="@+id/button2"
+                android:layout_below="@+id/button2"
+                android:text="Edit"
+                android:textSize="8sp"/>
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/button2"
+                android:background="@android:color/transparent"
+                android:layout_alignTop="@id/button2"
+                android:paddingLeft="8dp"
+                android:text="Delete"
+                android:layout_weight="1"
+                android:src="@drawable/ic_action_trash"
+                android:id="@+id/button3"
+                android:layout_gravity="left|center_vertical" />
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_alignLeft="@+id/button3"
+                android:layout_alignRight="@+id/button3"
+                android:layout_below="@+id/button3"
+                android:text="Move to Trash"
+                android:textSize="8sp"/>
+            </RelativeLayout>
+
+
+
+
+
+        </LinearLayout>
+
+    <LinearLayout
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        android:id="@+id/front"
+        android:background="@android:color/white"
+        android:layout_gravity="left|center_vertical">
+
+    <RelativeLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+       >
+
+        <TextView
+            android:id="@+id/recipientTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textStyle="bold"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/messageImageView"
+            android:text="Recipient Name Here"
+            android:paddingLeft="8dp"
+
+            />
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_alignParentRight="true"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Time to Send Here"
+            android:textStyle="italic"
+            android:textColor="@android:color/secondary_text_light"
+            android:id="@+id/timeTextView"
+            />
+
+        <TextView
+            android:layout_height="fill_parent"
+            android:layout_width="wrap_content"
+            android:id="@+id/messageTextView"
+            android:layout_below="@id/recipientTextView"
+            android:paddingLeft="24dp"
+            android:text="This is just a test message. This is just some filler text to fill this empty space." />
+
+        <View
+            android:layout_height="match_parent"
+            android:minHeight="48dp"
+            android:layout_width="16dp"
+            android:id="@+id/messageImageView"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_toEndOf="@+id/messageTextView"
+            android:background="#3B5998" />
+        </RelativeLayout>
+    </LinearLayout>
+</FrameLayout>

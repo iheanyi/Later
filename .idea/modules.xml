@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Later/Later.iml" filepath="$PROJECT_DIR$/Later/Later.iml" />
       <module fileurl="file://$PROJECT_DIR$/LaterProject.iml" filepath="$PROJECT_DIR$/LaterProject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libraries/swipelistview/swipelistview.iml" filepath="$PROJECT_DIR$/libraries/swipelistview/swipelistview.iml" />
     </modules>
   </component>
 </project>
