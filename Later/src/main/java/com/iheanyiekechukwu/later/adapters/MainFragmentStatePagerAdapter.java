@@ -19,11 +19,27 @@ public class  MainFragmentStatePagerAdapter extends FragmentStatePagerAdapter{
 
     public MainFragmentStatePagerAdapter(FragmentManager fm) {
         super(fm);
+
         this.mTrashFragment = new MainTrashFragment();
         this.mPendingFragment = new MainPendingFragment();
         this.mSentFragment = new MainSentFragment();
+
+        this.mTrashFragment.setHasOptionsMenu(true);
+        this.mPendingFragment.setHasOptionsMenu(true);
+        this.mSentFragment.setHasOptionsMenu(true);
     }
 
+    public MainTrashFragment getTrashFragment() {
+        return this.mTrashFragment;
+    }
+
+    public MainPendingFragment getPendingFragment() {
+        return this.mPendingFragment;
+    }
+
+    public MainSentFragment getSentFragment() {
+        return this.mSentFragment;
+    }
     @Override
     public Fragment getItem(int index) {
         switch (index) {

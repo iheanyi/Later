@@ -17,6 +17,9 @@ import android.widget.Toast;
 import com.iheanyiekechukwu.later.R;
 import com.iheanyiekechukwu.later.adapters.MainFragmentStatePagerAdapter;
 import com.iheanyiekechukwu.later.adapters.MainTabPagerAdapter;
+import com.iheanyiekechukwu.later.fragments.MainPendingFragment;
+import com.iheanyiekechukwu.later.fragments.MainSentFragment;
+import com.iheanyiekechukwu.later.fragments.MainTrashFragment;
 
 
 public class AlternateActivity extends FragmentActivity implements ActionBar.TabListener {
@@ -49,6 +52,10 @@ public class AlternateActivity extends FragmentActivity implements ActionBar.Tab
             android.R.color.holo_blue_light,
             android.R.color.holo_green_light };
 
+    private MainTrashFragment mTrashFragment;
+    private MainPendingFragment mPendingFragment;
+    private MainSentFragment mSentFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,8 +80,14 @@ public class AlternateActivity extends FragmentActivity implements ActionBar.Tab
         // primary sections of the activity.
         mStateAdapter  = new MainFragmentStatePagerAdapter(getSupportFragmentManager());
 
+        mTrashFragment = mStateAdapter.getTrashFragment();
+        mSentFragment = mStateAdapter.getSentFragment();
+        mPendingFragment = mStateAdapter.getPendingFragment();
+
+
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
+
 
 
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
@@ -136,6 +149,25 @@ public class AlternateActivity extends FragmentActivity implements ActionBar.Tab
     public boolean onCreateOptionsMenu(Menu menu) {
         
         // Inflate the menu; this adds items to the action bar if it is present.
+
+        switch (mViewPager.getCurrentItem()) {
+            case 0:
+
+                break;
+
+            case 1:
+
+                break;
+
+            case 2:
+
+                break;
+
+            default:
+
+                break;
+
+        }
         getMenuInflater().inflate(R.menu.alternate, menu);
         return true;
     }

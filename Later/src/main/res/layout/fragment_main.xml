@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity$PlaceholderFragment">
 
-    <com.fortysevendeg.swipelistview.SwipeListView
+    <!--<com.fortysevendeg.swipelistview.SwipeListView
         android:id="@+id/messageListView"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
@@ -17,6 +17,10 @@
         swipe:swipeCloseAllItemsWhenMoveList="true"
         swipe:swipeOpenOnLongPress="true"
         swipe:swipeAnimationTime="200"
-        swipe:swipeOffsetRight="48dp"/>
+        swipe:swipeOffsetRight="48dp"/> -->
 
+    <ListView
+        android:id="@+id/messageListView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
 </RelativeLayout>

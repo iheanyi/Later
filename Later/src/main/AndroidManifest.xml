@@ -16,21 +16,22 @@
         <activity
             android:name="com.iheanyiekechukwu.later.activities.MainActivity"
             android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <activity
             android:name="com.iheanyiekechukwu.later.activities.ComposeActivity"
             android:label="@string/title_activity_compose"
-            android:parentActivityName="com.iheanyiekechukwu.later.activities.MainActivity" >
+            android:parentActivityName="com.iheanyiekechukwu.later.activities.AlternateActivity" >
         </activity>
         <activity
             android:name="com.iheanyiekechukwu.later.activities.AlternateActivity"
-            android:label="@string/title_activity_alternate" >
+            android:label="@string/title_activity_alternate"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

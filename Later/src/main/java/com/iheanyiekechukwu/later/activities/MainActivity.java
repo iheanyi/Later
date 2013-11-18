@@ -15,11 +15,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.fortysevendeg.swipelistview.SwipeListView;
 import com.iheanyiekechukwu.later.R;
-import com.iheanyiekechukwu.later.adapters.SwipeMessageAdapter;
+import com.iheanyiekechukwu.later.adapters.MessageAdapter;
 import com.iheanyiekechukwu.later.fragments.NavigationDrawerFragment;
 import com.iheanyiekechukwu.later.helpers.Constants;
 import com.iheanyiekechukwu.later.models.MessageModel;
@@ -191,11 +192,13 @@ public class MainActivity extends Activity
 
             MessageModel[] testArray = {test1, test4, test3};
 
-            SwipeListView listView = (SwipeListView) rootView.findViewById(R.id.messageListView);
+//              SwipeListView listView = (SwipeListView) rootView.findViewById(R.id.messageListView);
 
+            ListView listView = (ListView) rootView.findViewById(R.id.messageListView);
 
-            SwipeMessageAdapter testMessageAdapter = new SwipeMessageAdapter(this.context);
+           // SwipeMessageAdapter testMessageAdapter = new SwipeMessageAdapter(this.context);
 
+            MessageAdapter testMessageAdapter = new MessageAdapter(this.context);
 
             testMessageAdapter.addAll(testModelList);
 
