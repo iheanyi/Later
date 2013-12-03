@@ -8,7 +8,10 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.iheanyiekechukwu.later.R;
+import com.iheanyiekechukwu.later.helpers.HelperUtils;
 import com.iheanyiekechukwu.later.models.MessageModel;
+
+import java.util.Calendar;
 
 /**
  * Created by iekechuk on 11/10/13.
@@ -17,7 +20,7 @@ public class MessageAdapter extends ArrayAdapter<MessageModel> {
 
     // View Lookup Cache
 
-    private static class ViewHolder {
+    protected static class ViewHolder {
         //ImageView typeImage;
 
         View typeBar;
@@ -26,11 +29,12 @@ public class MessageAdapter extends ArrayAdapter<MessageModel> {
         TextView messageText;
     }
 
+
     public MessageAdapter(Context context) {
         super(context, R.layout.list_item_message);
     }
 
-    private int getColorHelper(int colorID) {
+    protected int getColorHelper(int colorID) {
         return getContext().getResources().getColor(colorID);
     }
 
@@ -59,31 +63,32 @@ public class MessageAdapter extends ArrayAdapter<MessageModel> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
+        //String timeString = message.getmTime();
+        Calendar cal = message.getmDate();
+        String timeString = HelperUtils.buildTimeString(cal);
+        String messageString = message.getmMessage();
+        String recipientString = message.getmRecipient();
+
+        viewHolder.messageText.setText(messageString);
+        viewHolder.recipientName.setText(recipientString);
+        viewHolder.dateString.setText(timeString);
         switch(message.getMessageType()) {
 
             case FACEBOOK:
                 //viewHolder.typeImage.setImageResource(R.drawable.drawable_facebook);
                 viewHolder.typeBar.setBackgroundColor(getColorHelper(R.color.facebookBlue));
                 viewHolder.recipientName.setText("Facebook");
-                viewHolder.messageText.setText("Let me post something about my feelings that nobody cares about.");
-                viewHolder.dateString.setText("Today 5:00PM");
+
                 break;
 
             case MESSAGE:
                 viewHolder.typeBar.setBackgroundColor(getColorHelper(R.color.messageGreen));
                 viewHolder.recipientName.setVisibility(View.VISIBLE);
-                viewHolder.recipientName.setText("Taylor Seale");
-                viewHolder.dateString.setText("Tomorrow 12:00PM");
-                //viewHolder.typeImage.setImageResource(R.drawable.drawable_message);
-                viewHolder.messageText.setText("I hope we do well on this evaluation!.");
+
                 break;
             case TWITTER:
                 viewHolder.typeBar.setBackgroundColor(getColorHelper(R.color.twitterBlue));
-                //viewHolder.recipientName.setVisibility(View.INVISIBLE);
                 viewHolder.recipientName.setText("Twitter");
-                viewHolder.dateString.setText("Today 2:00PM");
-                //viewHolder.typeImage.setImageResource(R.drawable.drawable_message);
-                viewHolder.messageText.setText("Let's talk about how bad Notre Dame football is.");
                 break;
             default:
                 break;

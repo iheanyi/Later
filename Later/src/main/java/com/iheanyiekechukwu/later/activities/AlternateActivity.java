@@ -3,7 +3,6 @@ package com.iheanyiekechukwu.later.activities;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentActivity;
@@ -14,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.iheanyiekechukwu.later.R;
 import com.iheanyiekechukwu.later.adapters.MainFragmentStatePagerAdapter;
 import com.iheanyiekechukwu.later.adapters.MainTabPagerAdapter;
@@ -21,7 +21,7 @@ import com.iheanyiekechukwu.later.fragments.MainPendingFragment;
 import com.iheanyiekechukwu.later.fragments.MainSentFragment;
 import com.iheanyiekechukwu.later.fragments.MainTrashFragment;
 
-
+//import com.crashlytics.android.Crashlytics;
 public class AlternateActivity extends FragmentActivity implements ActionBar.TabListener {
 
     /**
@@ -52,14 +52,31 @@ public class AlternateActivity extends FragmentActivity implements ActionBar.Tab
             android.R.color.holo_blue_light,
             android.R.color.holo_green_light };
 
+
     private MainTrashFragment mTrashFragment;
     private MainPendingFragment mPendingFragment;
     private MainSentFragment mSentFragment;
 
+    private static final int COMPOSE_REQUEST_CODE = 10;
+
+
+    public MainSentFragment getmSentFragment() {
+        return mSentFragment;
+    }
+
+    public MainTrashFragment getmTrashFragment() {
+        return mTrashFragment;
+    }
+
+    public MainPendingFragment getmPendingFragment() {
+        return mPendingFragment;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Crashlytics.start(this);
+
         setContentView(R.layout.activity_alternate);
 
         // Set up the action bar.
@@ -87,6 +104,8 @@ public class AlternateActivity extends FragmentActivity implements ActionBar.Tab
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
+
+        mViewPager.setOffscreenPageLimit(3);
 
 
 
@@ -139,7 +158,7 @@ public class AlternateActivity extends FragmentActivity implements ActionBar.Tab
 
         //tabStrip.setTabIndicatorColor(vpColors[position]);
         //actionBar.setBackgroundDrawble(new ColorDrawable(getResources().getColor(vpHighlightColors[position])));
-        actionBar.setBackgroundDrawable(new ColorDrawable(vpHighlightColors[position]));
+        //actionBar.setBackgroundDrawable(new ColorDrawable(vpHighlightColors[position]));
         tabStrip.setBackgroundColor(getResources().getColor(vpColors[position]));
 //        tabStrip.notify();
 
@@ -168,9 +187,12 @@ public class AlternateActivity extends FragmentActivity implements ActionBar.Tab
                 break;
 
         }
+
         getMenuInflater().inflate(R.menu.alternate, menu);
         return true;
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -197,8 +219,72 @@ public class AlternateActivity extends FragmentActivity implements ActionBar.Tab
          */
 
         Intent intent = new Intent(this, ComposeActivity.class);
+        intent.putExtra("isNew", true);
         //Intent intent = new Intent(this, AlternateActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, COMPOSE_REQUEST_CODE);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        mPendingFragment.onActivityResult(requestCode, resultCode, data);
+        //Fragment fragment = (Fragment) getSupportFragmentManager()
+        if (resultCode == RESULT_OK) {
+            if(requestCode == COMPOSE_REQUEST_CODE) {
+
+
+            Toast.makeText(this, "WE MADE IT.", Toast.LENGTH_SHORT).show();
+            mViewPager.setCurrentItem(1);
+           // mViewPager.setCurrentItem(1);
+
+
+            /*int type;
+            type = data.getIntExtra("id", -1);
+
+            Constants.MESSAGE_TYPE tType = (Constants.MESSAGE_TYPE) data.getSerializableExtra("type");
+            //String recipient = "";
+
+            String recipient = data.getStringExtra("recipient");
+            Constants.MESSAGE_TYPE tmpType = Constants.MESSAGE_TYPE.MESSAGE;
+
+            switch (type) {
+                case R.id.radio_facebook:
+                    tmpType = Constants.MESSAGE_TYPE.FACEBOOK;
+                    //recipient = "Facebook";
+                    break;
+                case R.id.radio_sms:
+                    tmpType = Constants.MESSAGE_TYPE.MESSAGE;
+                    break;
+
+                case R.id.radio_twitter:
+                    tmpType = Constants.MESSAGE_TYPE.TWITTER;
+                    //recipient = "Twitter";
+                    break;
+
+                default:
+                    break;
+            }
+
+            String message = "";
+            String dateString = "";
+            message = data.getStringExtra("message");
+            dateString = data.getStringExtra("dateString");
+            Calendar tmpCal = (Calendar) data.getSerializableExtra("calendar");
+
+
+           /* if (tmpCal != null) {
+                Toast.makeText(getBaseContext(), Integer.toString(tmpCal.get(Calendar.HOUR)), Toast.LENGTH_SHORT).show();
+            }*/
+
+
+           /* MessageModel messageModel = new MessageModel(tType, recipient, message, dateString,tmpCal);
+
+            mPendingFragment.addItem(messageModel);*/
+        }
+        }
+
+
     }
 
     @Override

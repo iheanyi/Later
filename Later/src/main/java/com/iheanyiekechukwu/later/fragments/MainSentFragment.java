@@ -2,6 +2,7 @@ package com.iheanyiekechukwu.later.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -9,14 +10,19 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ListView;
 
 import com.iheanyiekechukwu.later.R;
+import com.iheanyiekechukwu.later.activities.AlternateActivity;
+import com.iheanyiekechukwu.later.adapters.MessageAdapter;
 import com.iheanyiekechukwu.later.adapters.MessageSentAdapter;
-import com.iheanyiekechukwu.later.helpers.Constants;
 import com.iheanyiekechukwu.later.models.MessageModel;
 
 import java.util.ArrayList;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 /**
  * Created by iekechuk on 11/12/13.
@@ -25,6 +31,12 @@ public class MainSentFragment extends Fragment {
 
     ListView sentListView;
     MessageSentAdapter mSentAdapter;
+
+    ArrayList<MessageModel> moveList;
+    AlternateActivity mActivity;
+
+
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -50,31 +62,127 @@ public class MainSentFragment extends Fragment {
 
         ArrayList<MessageModel> testModelList = new ArrayList<MessageModel>();
 
-        MessageModel test1 = new MessageModel(Constants.MESSAGE_TYPE.MESSAGE, "Testing Recipient", "Hey, this is my test message." +
-                " Pretty cool, huh?", "Tomorrow at 8:00PM");
-
-        MessageModel test2 = new MessageModel(Constants.MESSAGE_TYPE.MESSAGE, "Testing Recipient", "Hey, this is my test message." +
-                " Pretty cool, huh?", "Tomorrow at 8:00PM");
-
-        MessageModel test3 = new MessageModel(Constants.MESSAGE_TYPE.FACEBOOK, "Testing Recipient", "Hey, this is my test message." +
-                " Pretty cool, huh?", "Tomorrow at 8:00PM");
-
-        MessageModel test4 = new MessageModel(Constants.MESSAGE_TYPE.TWITTER, "Testing Recipient", "Just testing of a Twitter post.", "Tomorrow at 8:00 PM");
-
-        testModelList.add(test1);
-        testModelList.add(test4);
-        testModelList.add(test3);
-
-        MessageModel[] testArray = {test1, test4, test3};
+        moveList = new ArrayList<MessageModel>();
+        mActivity = (AlternateActivity) getActivity();
 
         mSentAdapter = new MessageSentAdapter(getActivity().getBaseContext());
-
-        mSentAdapter.addAll(testModelList);
-
 
 
         sentListView.setAdapter(mSentAdapter);
 
+        sentListView.setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
+        sentListView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+            @Override
+            public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+                MessageModel tmpModel = mSentAdapter.getItem(position);
+                //MessageAdapter test = getTargetFragment().getAdapter();
+
+                if (checked == true) {
+                    moveList.add(tmpModel);
+
+                } else {
+                    moveList.remove(tmpModel);
+                }
+
+
+
+                mode.setTitle(moveList.size() + " selected");
+            }
+
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+
+                MenuInflater inflater = mode.getMenuInflater();
+                inflater.inflate(R.menu.sent_menu, menu);
+                return true;
+            }
+
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+
+                switch (item.getItemId()) {
+                    case R.id.action_pending:
+                        queueSelectedItems();
+                        mode.finish();
+                        return true;
+
+                    case R.id.action_delete:
+                        trashSelectedItems();
+                        mode.finish();
+                        return true;
+
+                    default:
+                        return false;
+                }
+               // return false;
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+                moveList.clear();
+            }
+        });
         return rootView;
+    }
+
+    public void queueSelectedItems() {
+
+        mActivity.getmPendingFragment().addNewItems(moveList);
+
+        clearMoveList();
+    }
+
+
+    public MessageAdapter getAdapter() {
+        return this.mSentAdapter;
+    }
+    public void clearMoveList() {
+        for (MessageModel item : moveList) {
+            mSentAdapter.remove(item);
+        }
+
+        mSentAdapter.notifyDataSetChanged();
+        moveList.clear();
+    }
+    public void trashSelectedItems() {
+        mActivity.getmTrashFragment().addNewItems(moveList);
+
+        //undoMove(moveList);
+
+        clearMoveList();
+    }
+
+    public void undoMove(ArrayList<MessageModel> moveList) {
+        //UndoBar
+    }
+
+    public void undoSelectedItems(ArrayList<MessageModel> mList) {
+        mActivity.getmPendingFragment().addNewItems(mList);
+
+        for (MessageModel item : mList) {
+            mSentAdapter.remove(item);
+        }
+
+        mSentAdapter.notifyDataSetChanged();
+        //moveList.clear();
+
+
+    }
+
+    public void addNewItems(ArrayList<MessageModel> newData) {
+        mSentAdapter.addAll(newData);
+        mSentAdapter.notifyDataSetChanged();
+
+        if(newData.size() == 1) {
+            Crouton.makeText(getActivity(), "Message will be sent in 10 seconds.", Style.CONFIRM).show();
+        } else {
+            Crouton.makeText(getActivity(), "Messages will be sent in 10 seconds.", Style.CONFIRM).show();
+        }
+
     }
 }

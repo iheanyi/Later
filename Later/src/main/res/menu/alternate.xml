@@ -3,10 +3,10 @@
     tools:context=".AlternateActivity" >
     <item android:id="@+id/action_compose"
         android:title="@string/action_compose"
-        android:icon="@drawable/ic_action_add"
+        android:icon="@drawable/ic_action_add_white"
         android:showAsAction="ifRoom" />
 
-    <item android:id="@+id/action_settings"
+    <item android:id="@+id/ic_action_settings"
         android:title="@string/action_settings"
         android:orderInCategory="100"
         android:showAsAction="never" />

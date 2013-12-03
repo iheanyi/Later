@@ -19,13 +19,21 @@
         android:layout_below="@id/edit_recipient" />
 
 
-    <EditText
+    <TextView
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
-        android:id="@+id/edit_time"
+        android:id="@+id/text_time"
         android:layout_below="@id/edit_message"
         android:layout_alignParentLeft="true"
-        android:hint="Send time (e.g. tomorrow at 5pm)" />
+        android:hint="" />
+
+    <Button
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/btn_date"
+        android:layout_below="@+id/text_time"
+        android:hint="Select Date and Time"/>
+
 
 
 

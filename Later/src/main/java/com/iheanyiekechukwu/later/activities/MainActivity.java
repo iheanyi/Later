@@ -18,11 +18,9 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.fortysevendeg.swipelistview.SwipeListView;
 import com.iheanyiekechukwu.later.R;
 import com.iheanyiekechukwu.later.adapters.MessageAdapter;
 import com.iheanyiekechukwu.later.fragments.NavigationDrawerFragment;
-import com.iheanyiekechukwu.later.helpers.Constants;
 import com.iheanyiekechukwu.later.models.MessageModel;
 
 import java.util.ArrayList;
@@ -36,7 +34,7 @@ public class MainActivity extends Activity
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
-    private SwipeListView mListView;
+    private ListView mListView;
     private Context context;
 
     /**
@@ -175,7 +173,7 @@ public class MainActivity extends Activity
 
             ArrayList<MessageModel> testModelList = new ArrayList<MessageModel>();
 
-            MessageModel test1 = new MessageModel(Constants.MESSAGE_TYPE.MESSAGE, "Testing Recipient", "Hey, this is my test message." +
+           /* MessageModel test1 = new MessageModel(Constants.MESSAGE_TYPE.MESSAGE, "Testing Recipient", "Hey, this is my test message." +
                     " Pretty cool, huh?", "Tomorrow at 8:00PM");
 
             MessageModel test2 = new MessageModel(Constants.MESSAGE_TYPE.MESSAGE, "Testing Recipient", "Hey, this is my test message." +
@@ -190,7 +188,7 @@ public class MainActivity extends Activity
             testModelList.add(test4);
             testModelList.add(test3);
 
-            MessageModel[] testArray = {test1, test4, test3};
+            MessageModel[] testArray = {test1, test4, test3};*/
 
 //              SwipeListView listView = (SwipeListView) rootView.findViewById(R.id.messageListView);
 
@@ -200,7 +198,7 @@ public class MainActivity extends Activity
 
             MessageAdapter testMessageAdapter = new MessageAdapter(this.context);
 
-            testMessageAdapter.addAll(testModelList);
+            //testMessageAdapter.addAll(testModelList);
 
             listView.setAdapter(testMessageAdapter);
             //swipeView.setAdapter(MessageAdapter);
