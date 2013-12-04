@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="CrashlyticsPlugin">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/Later/libs/CrashlyticsPlugin.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

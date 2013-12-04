@@ -40,6 +40,9 @@
             </intent-filter>
         </activity>
         <meta-data android:name="com.crashlytics.ApiKey" android:value="57f048c026e0a0ef0167d46eff1c16efd17104b1"/>
+        <service android:name="com.iheanyiekechukwu.later.services.SendService" />
+        <receiver android:name="com.iheanyiekechukwu.later.receivers.SendScheduleReceiver" />
+        <receiver android:name="com.iheanyiekechukwu.later.receivers.StartReceiver" />
     </application>
 
 </manifest>

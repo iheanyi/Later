@@ -19,7 +19,7 @@ import java.util.Calendar;
 
 
 
-public class MessageModel implements Parcelable {
+public class MessageModel implements Parcelable, Comparable<MessageModel> {
 
     private MESSAGE_TYPE mType;
     private String mRecipient;
@@ -112,6 +112,8 @@ public class MessageModel implements Parcelable {
     }
 
     public void setmDate(Calendar mDate) {
+
+        this.mTime = HelperUtils.buildTimeString(mDate);
         this.mDate = mDate;
     }
 
@@ -146,4 +148,12 @@ public class MessageModel implements Parcelable {
         }
     };
 
+    @Override
+    public int compareTo(MessageModel another) {
+
+        Calendar compareDate = another.getmDate();
+
+
+        return this.mDate.compareTo(compareDate);
+    }
 }

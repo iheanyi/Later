@@ -1,1 +1,1 @@
-include ':Later', ':libraries:swipelistview'
+include ':Later',  ':libraries:datetimepicker-library', ':libraries:swipelistview', ':libraries:BetterPickers'

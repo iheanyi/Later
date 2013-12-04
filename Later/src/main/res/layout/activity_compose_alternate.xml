@@ -12,13 +12,25 @@
 
 
 
+
+
+    <AutoCompleteTextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:paddingBottom="16dp"
+        android:hint="Type the name of a recipient"
+        android:id="@+id/textRecipient"
+        android:visibility="gone"/>
+
+
     <EditText
         android:id="@+id/edit_recipient"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="16dp"
         android:layout_alignParentTop="true"
-        android:hint="Type the name of a recipient" />
+        android:hint="Type the name of a recipient"
+        android:visibility="gone"/>
 
 
     <FrameLayout
@@ -113,11 +125,5 @@
         </RadioGroup>
 
     </LinearLayout>
-
-    <AutoCompleteTextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:id="@+id/autoCompleteTextView" />
 
 </LinearLayout>

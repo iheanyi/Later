@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/libraries/BetterPickers/BetterPickers.iml" filepath="$PROJECT_DIR$/libraries/BetterPickers/BetterPickers.iml" />
       <module fileurl="file://$PROJECT_DIR$/Later/Later.iml" filepath="$PROJECT_DIR$/Later/Later.iml" />
       <module fileurl="file://$PROJECT_DIR$/LaterProject.iml" filepath="$PROJECT_DIR$/LaterProject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/libraries/datetimepicker-library/datetimepicker-library.iml" filepath="$PROJECT_DIR$/libraries/datetimepicker-library/datetimepicker-library.iml" />
       <module fileurl="file://$PROJECT_DIR$/libraries/libraries.iml" filepath="$PROJECT_DIR$/libraries/libraries.iml" />
       <module fileurl="file://$PROJECT_DIR$/libraries/swipelistview/swipelistview.iml" filepath="$PROJECT_DIR$/libraries/swipelistview/swipelistview.iml" />
     </modules>

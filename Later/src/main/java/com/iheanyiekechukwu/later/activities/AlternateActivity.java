@@ -11,7 +11,6 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.iheanyiekechukwu.later.R;
@@ -20,6 +19,9 @@ import com.iheanyiekechukwu.later.adapters.MainTabPagerAdapter;
 import com.iheanyiekechukwu.later.fragments.MainPendingFragment;
 import com.iheanyiekechukwu.later.fragments.MainSentFragment;
 import com.iheanyiekechukwu.later.fragments.MainTrashFragment;
+import com.iheanyiekechukwu.later.services.SendService;
+
+import java.util.Calendar;
 
 //import com.crashlytics.android.Crashlytics;
 public class AlternateActivity extends FragmentActivity implements ActionBar.TabListener {
@@ -60,6 +62,7 @@ public class AlternateActivity extends FragmentActivity implements ActionBar.Tab
     private static final int COMPOSE_REQUEST_CODE = 10;
 
 
+
     public MainSentFragment getmSentFragment() {
         return mSentFragment;
     }
@@ -79,12 +82,22 @@ public class AlternateActivity extends FragmentActivity implements ActionBar.Tab
 
         setContentView(R.layout.activity_alternate);
 
+
         // Set up the action bar.
 
 
         actionBar = getActionBar();
         actionBar.setTitle("Later");
 
+
+        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+            // Activity was brought to front and not created,
+            // Thus finishing this will get us to the last viewed activity
+
+            Log.e("TEST", "WRONG WRONG WRONG.");
+            finish();
+            return;
+        }
 
 
 
@@ -151,8 +164,15 @@ public class AlternateActivity extends FragmentActivity implements ActionBar.Tab
         }
 
         mViewPager.setCurrentItem(1);
+
+        //setupService();
     }
 
+
+    public void setupService() {
+        Calendar cal = Calendar.getInstance();
+        Intent intent = new Intent(this, SendService.class);
+    }
 
     private void changeStripBackground(int position) {
 
@@ -206,13 +226,13 @@ public class AlternateActivity extends FragmentActivity implements ActionBar.Tab
             case R.id.action_compose:
 
                 startComposeActivity();
-                Toast.makeText(this, "Clicked Compose!", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "Clicked Compose!", Toast.LENGTH_SHORT).show();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void startComposeActivity() {
+    public void startComposeActivity() {
         /**
          * Method for creating a new ComposeActivity.
          *
@@ -234,7 +254,7 @@ public class AlternateActivity extends FragmentActivity implements ActionBar.Tab
             if(requestCode == COMPOSE_REQUEST_CODE) {
 
 
-            Toast.makeText(this, "WE MADE IT.", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "WE MADE IT.", Toast.LENGTH_SHORT).show();
             mViewPager.setCurrentItem(1);
            // mViewPager.setCurrentItem(1);
 

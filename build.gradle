@@ -2,11 +2,28 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven { url 'http://download.crashlytics.com/maven' }
+
     }
 
     dependencies {
         classpath 'com.android.tools.build:gradle:0.6.+'
+        classpath 'com.crashlytics.tools.gradle:crashlytics-gradle:1.+'
+
+     //   compile 'com.crashlytics.android:crashlytics:1.+'
     }
 
-
 }
+
+/*allprojects {
+    group = 'com.doomonafireball.betterpickers'
+    version = '1.4.0'
+
+    repositories {
+        mavenCentral()
+    }
+
+    tasks.withType(Compile) {
+        options.encoding = "UTF-8"
+    }
+}*/

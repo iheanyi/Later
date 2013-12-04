@@ -1,6 +1,16 @@
 package com.iheanyiekechukwu.later.fragments;
 
+import android.app.AlarmManager;
+import android.app.AlertDialog;
+import android.app.DialogFragment;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
@@ -15,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cocosw.undobar.UndoBarController;
@@ -25,7 +36,9 @@ import com.iheanyiekechukwu.later.activities.ComposeActivity;
 import com.iheanyiekechukwu.later.adapters.MessageAdapter;
 import com.iheanyiekechukwu.later.adapters.MessagePendingAdapter;
 import com.iheanyiekechukwu.later.helpers.Constants;
+import com.iheanyiekechukwu.later.helpers.HelperUtils;
 import com.iheanyiekechukwu.later.models.MessageModel;
+import com.iheanyiekechukwu.later.services.SendService;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -52,13 +65,32 @@ public class MainPendingFragment extends Fragment implements UndoBarController.U
     AlternateActivity mActivity;
 
     SwingRightInAnimationAdapter mAnimAdapter;
+    public boolean showNotif = false;
+
+
+    private SendService s;
 
 
     private static final int EDIT_REQUEST_CODE = 20;
     private static final int COMPOSE_REQUEST_CODE = 10;
 
+    public TextView statusTextView;
 
 
+    NotificationManager nm;
+    private Intent intent;
+
+
+    private int NOTIFICATION_ID = 0;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        intent = new Intent(getActivity(), SendService.class);
+        nm = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+
+    }
 
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
         @Override
@@ -167,14 +199,93 @@ public class MainPendingFragment extends Fragment implements UndoBarController.U
                     mPendingAdapter.remove(removeModel);
 
                     mPendingAdapter.add(editedMessage);
+                    mPendingAdapter.sort(HelperUtils.MessageComparator);
                     mPendingAdapter.notifyDataSetChanged();
 
-                    Crouton.makeText(getActivity(), "Message edited.", Style.INFO).show();
+                    Crouton.makeText(getActivity(), "Message successfully edited.", Style.INFO).show();
 
                 }
             }
         }
         //Crouton.makeText(getActivity(), "Callback received?", Style.INFO).show();
+    }
+
+    /*private ServiceConnection mConnection = new ServiceConnection() {
+
+        public void onServiceConnected(ComponentName className, IBinder binder) {
+            s = ((SendService.SendBinder) binder).getService();
+            Toast.makeText(getActivity(), "Connected", Toast.LENGTH_SHORT)
+                    .show();
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            s = null;
+        }
+    };*/
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        showNotif = true;
+        getActivity().startService(intent);
+        getActivity().registerReceiver(broadcastReceiver, new IntentFilter(SendService.REMOVE_LATEST));
+       /* super.onPause();
+        //getActivity().unbindService(mConnection);
+        getActivity().unregisterReceiver(broadcastReceiver);
+        getActivity().stopService(intent);*/
+    }
+
+
+    /*@Override
+    public void onStart() {
+        super.onStart();
+        showNotif = false;
+
+    }*/
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        //getActivity().unbindService(mConnection);
+        //getActivity().unregisterReceiver(broadcastReceiver);
+        //getActivity().stopService(intent);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getActivity().unregisterReceiver(broadcastReceiver);
+        getActivity().stopService(intent);
+
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        showNotif = false;
+        getActivity().startService(intent);
+        getActivity().registerReceiver(broadcastReceiver, new IntentFilter(SendService.REMOVE_LATEST));
+        /*getActivity().bindService(new Intent(getActivity(), SendService.class), mConnection,
+                Context.BIND_AUTO_CREATE);*/
+    }
+    public void updateService() {
+
+        if(!mPendingAdapter.isEmpty()) {
+            MessageModel nextMessage = mPendingAdapter.getItem(0);
+            Calendar cal = nextMessage.getmDate();
+
+            Calendar curr = Calendar.getInstance();
+
+           // Content ctx = getActivity().getBaseContext();
+            Intent intent = new Intent(mActivity.getBaseContext(), SendService.class);
+            PendingIntent pintent = PendingIntent.getService(mActivity.getBaseContext(), 0, intent, 0);
+
+
+            AlarmManager alarm = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+
+            alarm.setRepeating(AlarmManager.RTC_WAKEUP, curr.getTimeInMillis(), 5*1000, pintent);
+        }
+
+
     }
 
     @Override
@@ -183,6 +294,7 @@ public class MainPendingFragment extends Fragment implements UndoBarController.U
 
 
 
+        statusTextView = (TextView) rootView.findViewById(R.id.statusTextView);
         mActivity = (AlternateActivity) getActivity();
 
         mPendingAdapter = new MessagePendingAdapter(getActivity().getBaseContext());
@@ -256,17 +368,52 @@ public class MainPendingFragment extends Fragment implements UndoBarController.U
             }
 
             @Override
-            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            public boolean onActionItemClicked(final ActionMode mode, MenuItem item) {
 
                 switch (item.getItemId()) {
                     case R.id.action_delete:
-                        trashSelectedItems();
-                        mode.finish();
+
+                        new AlertDialog.Builder(mActivity).setIcon(android.R.drawable.ic_dialog_alert)
+                                .setTitle("Confirm Trash")
+                                .setMessage("All these messages will be moved to the trash!")
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        trashSelectedItems();
+                                        mode.finish();
+                                    }
+                                })
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        mode.finish();
+                                        dialog.dismiss();
+                                    }
+                                }).show();
+
                         return true;
 
                     case R.id.action_send:
-                        sendSelectedItems();
-                        mode.finish();
+                        new AlertDialog.Builder(mActivity).setIcon(android.R.drawable.ic_dialog_alert)
+                                .setTitle("Confirm Sending")
+                                .setMessage("These selected messages will be sent IMMEDIATELY.")
+                                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        sendSelectedItems();
+                                        mode.finish();
+                                    }
+                                })
+                                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        mode.finish();
+                                        dialog.dismiss();
+                                    }
+                                }).show();
+
+
+
                     default:
                         return false;
                 }
@@ -278,9 +425,84 @@ public class MainPendingFragment extends Fragment implements UndoBarController.U
 
             }
         });
+
+
+        //updateService();
+
+        getActivity().startService(new Intent(getActivity().getBaseContext(), SendService.class));
         return rootView;
     }
 
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent i) {
+            // Check latest date.
+
+            checkQueue(i);
+
+            //updateUI(intent);
+        }
+    };
+
+
+    private boolean checkQueue(Intent data) {
+
+        Calendar checkTime = (Calendar) data.getSerializableExtra("date");
+
+        ArrayList<MessageModel> tmpList = new ArrayList<MessageModel>();
+
+        //int i = 0;
+
+        if (mPendingAdapter.isEmpty() == false) {
+            int counter = 0;
+
+            for(int i = 0; i < mPendingAdapter.getCount(); ++i) {
+                MessageModel tmpModel = mPendingAdapter.getItem(i);
+                Calendar tmpCal = tmpModel.getmDate();
+
+
+                if (tmpCal.compareTo(checkTime) <= 0) {
+                    tmpList.add(tmpModel);
+                    //mPendingAdapter.remove(tmpModel);
+                    counter += 1;
+                }
+            }
+
+            if (tmpList.size() > 0) {
+                mActivity.getmSentFragment().sendItem(tmpList);
+
+
+            }
+
+            for (MessageModel tmp : tmpList) {
+                mPendingAdapter.remove(tmp);
+            }
+
+
+            displayNotification(tmpList.size());
+
+
+            mPendingAdapter.sort(HelperUtils.MessageComparator);
+            mPendingAdapter.notifyDataSetChanged();
+
+
+            checkLayout();
+            return true;
+
+        } else {
+            return false;
+        }
+
+    }
+
+
+    public void checkLayout() {
+        if (mPendingAdapter.isEmpty()) {
+            statusTextView.setVisibility(View.VISIBLE);
+        } else {
+            statusTextView.setVisibility(View.GONE);
+        }
+    }
 
     private void editMessage() {
         /**
@@ -294,7 +516,67 @@ public class MainPendingFragment extends Fragment implements UndoBarController.U
         startActivityForResult(intent, EDIT_REQUEST_CODE);
     }
 
+    void displayNotification(int count) {
+
+
+
+        if (count > 0) {
+            String message = "";
+            if (count == 1) {
+                message = "Later sent your queued message!";
+            } else {
+                message = "Later sent your queued messages!";
+            }
+
+            Intent newIntent = new Intent(getActivity().getApplicationContext(), AlternateActivity.class);
+            newIntent.setAction(Intent.ACTION_MAIN);
+            newIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+            newIntent.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+            PendingIntent pIntent = PendingIntent.getActivity(getActivity().getApplicationContext(), 0, newIntent, 0);
+            Notification n = new Notification.Builder(getActivity().getBaseContext())
+                    .setContentTitle("Later")
+                    .setContentText(message)
+                    .setSmallIcon(R.drawable.later_logo)
+                    .setContentIntent(pIntent)
+                    .setNumber(count)
+                    .setAutoCancel(true).build();
+
+            if(showNotif == true) {
+                nm.notify(0, n);
+            } else {
+                if (count == 1) {
+                    Crouton.makeText(getActivity(), "Queued message successfully sent.", Style.CONFIRM).show();
+                } else {
+                    Crouton.makeText(getActivity(), String.valueOf(count) + " queued messages successfully sent.", Style.CONFIRM).show();
+                }
+            }
+
+            checkLayout();
+        }
+
+    }
     public void trashSelectedItems() {
+
+
+
+        /*new AlertDialog.Builder(mActivity).setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Confirm Trash")
+                .setMessage("All selected messages will be trashed.")
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mActivity.getmTrashFragment().addNewItems(moveList);
+
+                        clearMoveList();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });*/
+
         mActivity.getmTrashFragment().addNewItems(moveList);
 
    /*     for(MessageModel item : moveList) {
@@ -317,13 +599,27 @@ public class MainPendingFragment extends Fragment implements UndoBarController.U
         for(MessageModel item : moveList) {
             mPendingAdapter.remove(item);
         }
+        mPendingAdapter.sort(HelperUtils.MessageComparator);
 
         mPendingAdapter.notifyDataSetChanged();
         moveList.clear();
+
+        checkLayout();
     }
 
+    public DialogFragment diaFag = new DialogFragment() {
+
+    };
     public void sendSelectedItems() {
+
         mActivity.getmSentFragment().addNewItems(moveList);
+
+        clearMoveList();
+
+
+
+        //mActivity.getmSentFragment().addNewItems(moveList);
+
         /*
         for(MessageModel item : moveList) {
             mPendingAdapter.remove(item);
@@ -339,18 +635,35 @@ public class MainPendingFragment extends Fragment implements UndoBarController.U
 //            UndoBarController.show(getActivity(), "Undo", sentUndoListener);
         }*/
 
-        clearMoveList();
+//        clearMoveList();
     }
 
     public void addItem(MessageModel message) {
         mPendingAdapter.add(message);
+        mPendingAdapter.sort(HelperUtils.MessageComparator);
         mPendingAdapter.notifyDataSetChanged();
 
+
         Crouton.makeText(getActivity(), "Message added to queue.", Style.INFO).show();
+        checkLayout();
     }
 
     public void addNewItems(ArrayList<MessageModel> newItems) {
-        mPendingAdapter.addAll(newItems);
+
+        Calendar current = Calendar.getInstance();
+        for(MessageModel item: newItems) {
+            if (item.getmDate().before(current)) {
+                Calendar old = item.getmDate();
+                int oldYear = old.get(Calendar.YEAR);
+                old.set(Calendar.YEAR, oldYear+1);
+                item.setmDate(old);
+            }
+
+            mPendingAdapter.add(item);
+        }
+        //mPendingAdapter.addAll(newItems);
+
+        mPendingAdapter.sort(HelperUtils.MessageComparator);
         mPendingAdapter.notifyDataSetChanged();
 
         if(newItems.size() == 1) {
@@ -358,6 +671,8 @@ public class MainPendingFragment extends Fragment implements UndoBarController.U
         } else {
             Crouton.makeText(getActivity(), "Messages moved to queue.", Style.INFO).show();
         }
+
+        checkLayout();
     }
 
 
@@ -370,4 +685,5 @@ public class MainPendingFragment extends Fragment implements UndoBarController.U
         //lastMoveList.clear();
 
     }
+
 }

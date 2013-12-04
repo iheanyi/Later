@@ -12,6 +12,8 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -57,9 +59,13 @@ public class ComposeActivity extends FragmentActivity implements DatePickerDialo
     private TabPagerAdapter mAdapter;
     private String[] tabs = {"Message", "Facebook", "Twitter"};
 
+    private String[] options = {"Bob", "Sidney", "Taylor", "Jake", "Sally", "Sammy", "Samanatha", "Katie 1",
+                              "Katie 2", "Matt", "Mike", "Bill", "Romeo", "George", "Mom", "Dad"};
+
     /* Layout variables */
     EditText messageText;
-    EditText recipientText;
+    //EditText recipientText;
+    AutoCompleteTextView recipientText;
     TextView sizeText;
     Button buttonDate;
     Button buttonTime;
@@ -106,13 +112,21 @@ public class ComposeActivity extends FragmentActivity implements DatePickerDialo
 
 
 
+        ArrayAdapter<String> dropdownAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, options);
+
+        recipientText = (AutoCompleteTextView) findViewById(R.id.textRecipient);
+        recipientText.setThreshold(1);
+        recipientText.setAdapter(dropdownAdapter);
+
 
         // Find Elements in layout
-        recipientText = (EditText) findViewById(R.id.edit_recipient);
+        //recipientText = (EditText) findViewById(R.id.edit_recipient);
         messageText = (EditText) findViewById(R.id.edit_message);
         sizeText = (TextView) findViewById(R.id.text_size);
         buttonDate = (Button) findViewById(R.id.btn_time);
         radioMessageGroup = (RadioGroup) findViewById(R.id.radio_type);
+
+
 
         radioMessageGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()  {
 
@@ -124,6 +138,13 @@ public class ComposeActivity extends FragmentActivity implements DatePickerDialo
 
             }
         });
+
+
+        /*ArrayAdapter<String> dropdownAdapter = new ArrayAdapter<String>(this, android.R.layout.select_dialog_item, options);
+
+        AutoCompleteTextView textView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
+        textView.setThreshold(1);
+        textView.setAdapter(dropdownAdapter);*/
 
 
         radioMessageGroup.check(R.id.radio_sms);
@@ -170,18 +191,17 @@ public class ComposeActivity extends FragmentActivity implements DatePickerDialo
 
                 //final Calendar cal;
                 if (isNew) {
-                    //newCalendar = Calendar.getInstance();
                     radioMessageGroup.check(R.id.radio_sms);
-                    //cal = Calendar.getInstance();
                     mType = MESSAGE;
                     actionBar.setTitle("Add New Message");
 
                 } else {
-                    Crouton.makeText(ComposeActivity.this, "Editing.", Style.ALERT).show();
+                    //Crouton.makeText(ComposeActivity.this, "Editing.", Style.ALERT).show();
                     MessageModel message = (MessageModel) extras.get("message");
 
                     cal = message.getmDate();
                     newCalendar = message.getmDate();
+                    newCalendar = Calendar.getInstance();
                     actionBar.setTitle("Edit Message");
                     if (message.getMessageType() == MESSAGE_TYPE.FACEBOOK) {
                         radioMessageGroup.check(R.id.radio_facebook);
@@ -193,6 +213,7 @@ public class ComposeActivity extends FragmentActivity implements DatePickerDialo
                         radioMessageGroup.check(R.id.radio_twitter);
                         updateLayout(R.id.radio_twitter);
                     }
+
                     buildEditLayout(message);
                 }
             }
@@ -231,7 +252,7 @@ public class ComposeActivity extends FragmentActivity implements DatePickerDialo
         buttonDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                datePickerDialog.setYearRange(mYear, 2028);
+                datePickerDialog.setYearRange(2013, 2028);
                 datePickerDialog.show(getSupportFragmentManager(), "datepicker");
 
             }
@@ -253,11 +274,13 @@ public class ComposeActivity extends FragmentActivity implements DatePickerDialo
         ArrayList<String> contactCollection = new ArrayList<String>();
         ArrayList<String> numberCollection = new ArrayList<String>();
 
-        /*ContentResolver cr = getContentResolver();
+        /*
+        ContentResolver cr = getContentResolver();
 
         Cursor contactCur = cr.query(ContactsContract.Contacts.CONTENT_URI
                 , null, null, null, null);
 
+        int i = 0;
         while (contactCur.moveToNext()) {
             String name = contactCur.getString(contactCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
             String sel = contactCur.getString(contactCur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
@@ -265,15 +288,17 @@ public class ComposeActivity extends FragmentActivity implements DatePickerDialo
             Toast.makeText(getBaseContext(), name, Toast.LENGTH_SHORT).show();
             //String num = contactCur.getString(contactCur.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
             contactCollection.add(sel);
+            Log.e("TAG", name);
             //numberCollection.add(num);
+            i++;
         }
 
-        contactCur.close();
+        contactCur.close();*/
 
         String[] names = contactCollection.toArray(new String[contactCollection.size()]);
         contactCollection.toArray(names);
 
-        ArrayAdapter<String> dropdownAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, names);
+        /*ArrayAdapter<String> dropdownAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, names);
         AutoCompleteTextView textView = (AutoCompleteTextView) findViewById(R.id.autoCompleteTextView);
 
         textView.setAdapter(dropdownAdapter);*/
@@ -372,7 +397,7 @@ public class ComposeActivity extends FragmentActivity implements DatePickerDialo
         switch (mType) {
             case MESSAGE:
                 if(recipient.equals("")) {
-                    Crouton.makeText(ComposeActivity.this, "Empty recipient message.", Style.INFO).show();
+                    Crouton.makeText(ComposeActivity.this, "Please enter a recipient.", Style.ALERT).show();
 
                     return false;
                 }
@@ -381,7 +406,7 @@ public class ComposeActivity extends FragmentActivity implements DatePickerDialo
 
             case TWITTER:
                 if (message.length() > 140) {
-                    Crouton.makeText(ComposeActivity.this, "Too long of a message..", Style.INFO).show();
+                    Crouton.makeText(ComposeActivity.this, "Please shorten your message.", Style.ALERT).show();
 
                     return false;
                 }
